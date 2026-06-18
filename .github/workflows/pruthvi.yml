@@ -13,30 +13,45 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_1 }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_1 }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Verify AWS Login
         run: aws sts get-caller-identity
 
+      # - name: Check Repository Structure
+      #   run: |
+      #     pwd
+      #     ls -la
+      #     ls -la Environment
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # - name: Terraform Format Check
+      #   run: terraform fmt -check -recursive
+      #   working-directory: Environment
+
       - name: Terraform Init
         run: terraform init
+        working-directory: Environment
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: Environment
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: Environment
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+        working-directory: Environment
